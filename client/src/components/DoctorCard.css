@@ -1,0 +1,146 @@
+.doctor-card {
+  padding: var(--space-6);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.doctor-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.doctor-card:hover::before {
+  opacity: 1;
+}
+
+.doctor-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.doctor-card-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.doctor-card-avatar .availability-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--success);
+  border: 2.5px solid var(--bg-primary);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.doctor-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.doctor-card-name {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.doctor-card-specialization {
+  font-size: var(--font-sm);
+  color: var(--primary-light);
+  font-weight: 500;
+  margin-bottom: var(--space-2);
+}
+
+.doctor-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.doctor-card-detail {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.doctor-card-detail svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.doctor-card-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.doctor-card-rating .star {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.doctor-card-rating .star.empty {
+  color: var(--text-muted);
+  opacity: 0.3;
+}
+
+.doctor-card-rating span {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-left: var(--space-1);
+}
+
+.doctor-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--surface-border);
+  margin-top: auto;
+}
+
+.doctor-card-fee {
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-card-fee-label {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.doctor-card-fee-amount {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.doctor-card .btn {
+  flex-shrink: 0;
+}

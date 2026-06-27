@@ -1,0 +1,46 @@
+/* Doctor dashboard reuses PatientDashboard.css plus a few extras */
+
+.schedule-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--surface-border);
+  transition: all var(--transition-base);
+}
+
+.schedule-item:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--surface-border-hover);
+}
+
+.schedule-time {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--primary-light);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.schedule-patient {
+  flex: 1;
+}
+
+.schedule-patient h4 {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.schedule-patient p {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}

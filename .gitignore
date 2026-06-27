@@ -1,0 +1,19 @@
+# Credentials & Secrets (CRITICAL)
+mediconnect.pem
+**/*.pem
+**/.env
+**/.env.*
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build Outputs
+dist/
+build/
+*.tar.gz
+
+# System Files
+.DS_Store
+Thumbs.db
