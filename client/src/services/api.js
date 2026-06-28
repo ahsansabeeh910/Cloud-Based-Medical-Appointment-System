@@ -52,11 +52,20 @@ export const updateAppointment = (id, data) => API.patch(`/appointments/${id}`, 
 export const cancelAppointment = (id) => API.delete(`/appointments/${id}`);
 
 // Prescriptions
-export const uploadPrescription = (data) => {
+export const uploadPrescription = async (data) => {
   const token = localStorage.getItem('token');
-  return axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000/api') + '/prescriptions', data, {
-    headers: { Authorization: `Bearer ${token}` }
+  const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:5000/api') + '/prescriptions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: data
   });
+  const json = await res.json();
+  if (!res.ok) {
+    const error = new Error('Upload failed');
+    error.response = { data: json };
+    throw error;
+  }
+  return { data: json };
 };
 export const getPrescriptionsByAppointment = (appointmentId) => API.get(`/prescriptions/appointment/${appointmentId}`);
 export const downloadPrescription = (id) => API.get(`/prescriptions/${id}/download`);
