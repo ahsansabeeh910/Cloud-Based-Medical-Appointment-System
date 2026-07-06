@@ -37,7 +37,7 @@ export default function DoctorSearch() {
   const fetchDoctors = async () => {
     setLoading(true);
     try {
-      const { data } = await getDoctors();
+      const { data } = await getDoctors({ limit: 100 });
       const rawDoctors = Array.isArray(data) ? data : (data.data || data.doctors || []);
       const formatted = rawDoctors.map(doc => ({
         ...doc,
