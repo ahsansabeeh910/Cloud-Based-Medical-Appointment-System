@@ -76,20 +76,7 @@ export default function Profile() {
 
   const isDoctor = user?.role === 'doctor';
 
-  // Sample data for display
-  const profileStats = isDoctor
-    ? [
-        { label: 'Total Patients', value: '128', icon: <FiUser /> },
-        { label: 'Appointments', value: '342', icon: <FiCalendar /> },
-        { label: 'Experience', value: `${doctorForm.experience} yrs`, icon: <FiClock /> },
-        { label: 'Rating', value: '4.8★', icon: <FiAward /> },
-      ]
-    : [
-        { label: 'Appointments', value: '12', icon: <FiCalendar /> },
-        { label: 'Prescriptions', value: '8', icon: <FiBriefcase /> },
-        { label: 'Doctors Visited', value: '5', icon: <FiUser /> },
-        { label: 'Member Since', value: '2025', icon: <FiClock /> },
-      ];
+
 
   return (
     <div className="profile-page page">
@@ -133,15 +120,6 @@ export default function Profile() {
                 </div>
               )}
 
-              <div className="profile-stats-grid">
-                {profileStats.map((stat, i) => (
-                  <div key={i} className="profile-stat-item">
-                    <div className="profile-stat-icon">{stat.icon}</div>
-                    <div className="profile-stat-value">{stat.value}</div>
-                    <div className="profile-stat-label">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
