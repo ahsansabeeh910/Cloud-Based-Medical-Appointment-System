@@ -23,7 +23,9 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    const redirectPath = user?.role === 'doctor' ? '/doctor/dashboard' : '/dashboard';
+    let redirectPath = '/dashboard';
+    if (user?.role === 'doctor') redirectPath = '/doctor/dashboard';
+    if (user?.role === 'admin') redirectPath = '/admin';
     return <Navigate to={redirectPath} replace />;
   }
 

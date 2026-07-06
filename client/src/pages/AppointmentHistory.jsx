@@ -124,7 +124,7 @@ export default function AppointmentHistory() {
       <div className="container">
         <div className="history-header animate-fadeInUp">
           <h1>
-            My <span className="gradient-text">Appointments</span>
+            Appointments <span className="gradient-text">History</span>
           </h1>
           <p>View and manage all your appointments</p>
         </div>

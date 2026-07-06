@@ -73,5 +73,6 @@ export const downloadPrescription = (id) => API.get(`/prescriptions/${id}/downlo
 // Admin
 export const getSystemStats = () => API.get('/admin/stats');
 export const getAllUsers = () => API.get('/admin/users');
+export const deleteUser = (id) => API.delete(`/admin/users/${id}`);
 
 export default API;

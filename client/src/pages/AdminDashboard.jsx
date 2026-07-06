@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { FiUsers, FiCalendar, FiActivity, FiUserCheck, FiShield } from 'react-icons/fi';
-import { getSystemStats, getAllUsers } from '../services/api';
+import { FiUsers, FiCalendar, FiActivity, FiUserCheck, FiShield, FiTrash2 } from 'react-icons/fi';
+import { getSystemStats, getAllUsers, deleteUser } from '../services/api';
 import StatsCard from '../components/StatsCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { toast } from 'react-toastify';
@@ -37,6 +37,19 @@ export default function AdminDashboard() {
       toast.error('Failed to load admin dashboard data');
     }
     setLoading(false);
+  };
+
+  const handleDeleteUser = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to completely remove ${name} from the system?`)) return;
+    
+    try {
+      await deleteUser(id);
+      toast.success(`${name} has been removed successfully`);
+      fetchDashboardData();
+    } catch (error) {
+      toast.error('Failed to remove user');
+      console.error(error);
+    }
   };
 
   if (loading) {
@@ -76,6 +89,7 @@ export default function AdminDashboard() {
                   <th>Email</th>
                   <th>Role</th>
                   <th>Joined Date</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -92,6 +106,18 @@ export default function AdminDashboard() {
                       <span className={`badge badge-${u.role}`}>{u.role}</span>
                     </td>
                     <td>{new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      {u.role !== 'admin' && (
+                        <button 
+                          className="btn btn-icon btn-ghost" 
+                          onClick={() => handleDeleteUser(u._id, u.name)}
+                          title="Remove User"
+                          style={{ color: 'var(--danger)' }}
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {users.length === 0 && (

@@ -127,7 +127,7 @@ export default function PatientDashboard() {
             </div>
             <div className="quick-action-card glass-card glass-card-hover" onClick={() => navigate('/appointments')}>
               <div className="quick-action-icon" style={{ background: 'var(--gradient-secondary)' }}><FiCalendar /></div>
-              <h4>My Appointments</h4>
+              <h4>Appointments History</h4>
               <p>View all your appointments</p>
             </div>
             <div className="quick-action-card glass-card glass-card-hover" onClick={() => navigate('/profile')}>
