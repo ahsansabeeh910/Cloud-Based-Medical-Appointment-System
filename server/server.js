@@ -12,6 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 /**
  * Initialize Express application.
@@ -64,6 +65,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ---------------------
 // Error Handling

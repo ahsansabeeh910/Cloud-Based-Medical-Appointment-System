@@ -12,6 +12,7 @@ import DoctorSearch from './pages/DoctorSearch';
 import BookAppointment from './pages/BookAppointment';
 import PatientDashboard from './pages/PatientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import AppointmentHistory from './pages/AppointmentHistory';
 import Profile from './pages/Profile';
 import Reports from './pages/Reports';
@@ -80,6 +81,13 @@ function AppRoutes() {
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
+        </ProtectedRoute>
+      } />
+
+      {/* Admin Routes */}
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <AdminDashboard />
         </ProtectedRoute>
       } />
 

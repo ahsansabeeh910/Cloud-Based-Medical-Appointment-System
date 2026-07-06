@@ -70,4 +70,8 @@ export const uploadPrescription = async (data) => {
 export const getPrescriptionsByAppointment = (appointmentId) => API.get(`/prescriptions/appointment/${appointmentId}`);
 export const downloadPrescription = (id) => API.get(`/prescriptions/${id}/download`);
 
+// Admin
+export const getSystemStats = () => API.get('/admin/stats');
+export const getAllUsers = () => API.get('/admin/users');
+
 export default API;

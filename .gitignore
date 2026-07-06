@@ -17,3 +17,6 @@ build/
 # System Files
 .DS_Store
 Thumbs.db
+*.csv
+my-app-user_accessKeys.csv
+my-app-user_credentials.csv

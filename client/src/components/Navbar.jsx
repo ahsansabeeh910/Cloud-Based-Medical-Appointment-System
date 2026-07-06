@@ -118,6 +118,11 @@ export default function Navbar() {
                       <FiClock size={16} /> Appointments
                     </Link>
                     <div className="navbar-dropdown-divider" />
+                    {user.role === 'admin' && (
+                      <Link to="/admin" className="navbar-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <FiActivity size={16} /> Admin Panel
+                      </Link>
+                    )}
                     <button className="navbar-dropdown-item danger" onClick={handleLogout}>
                       <FiLogOut size={16} /> Logout
                     </button>

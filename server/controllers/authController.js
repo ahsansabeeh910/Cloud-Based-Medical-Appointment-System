@@ -37,8 +37,8 @@ const registerValidation = [
     .withMessage('Password must be at least 6 characters'),
   body('role')
     .optional()
-    .isIn(['patient', 'doctor'])
-    .withMessage('Role must be either patient or doctor'),
+    .isIn(['patient', 'doctor', 'admin'])
+    .withMessage('Role must be either patient, doctor, or admin'),
   body('phone').optional().trim(),
 ];
 
