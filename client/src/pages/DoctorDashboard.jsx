@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  FiCalendar, FiClock, FiUsers, FiStar,
+  FiCalendar, FiClock, FiUsers,
   FiUser, FiArrowRight, FiCheckCircle
 } from 'react-icons/fi';
 import StatsCard from '../components/StatsCard';
@@ -21,12 +21,7 @@ const SAMPLE_APPOINTMENTS = [
   { id: '6', patientName: 'Kavita Singh', patientEmail: 'kavita@email.com', date: '2026-06-28', time: '09:30 AM', status: 'cancelled', reason: 'Regular checkup' },
 ];
 
-const TODAY_SCHEDULE = [
-  { time: '09:00 AM', patient: 'Rahul Mehta', reason: 'Chest pain' },
-  { time: '10:00 AM', patient: 'Priya Kumar', reason: 'BP Follow-up' },
-  { time: '11:30 AM', patient: 'Deepak Joshi', reason: 'Health checkup' },
-  { time: '02:00 PM', patient: 'Sneha Rao', reason: 'Breathing difficulties' },
-];
+
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
@@ -123,7 +118,6 @@ export default function DoctorDashboard() {
           <StatsCard icon={<FiCalendar />} value={todayAppts.length} label="Today's Appointments" gradient="var(--gradient-primary)" index={0} />
           <StatsCard icon={<FiClock />} value={pending.length} label="Pending Approval" gradient="var(--gradient-warm)" index={1} />
           <StatsCard icon={<FiUsers />} value={totalPatients} label="Total Patients" gradient="var(--gradient-secondary)" index={2} />
-          <StatsCard icon={<FiStar />} value="4.9" label="Average Rating" gradient="var(--gradient-purple)" index={3} />
         </div>
 
         {pending.length > 0 && (
@@ -145,16 +139,20 @@ export default function DoctorDashboard() {
             <h2>📅 Today's Schedule</h2>
           </div>
           <div className="schedule-timeline glass-card" style={{ padding: 'var(--space-4)' }}>
-            {TODAY_SCHEDULE.map((item, i) => (
-              <div key={i} className="schedule-item animate-fadeInUp" style={{ animationDelay: `${i * 0.08}s`, animationFillMode: 'both' }}>
-                <span className="schedule-time">{item.time}</span>
-                <div className="schedule-patient">
-                  <h4>{item.patient}</h4>
-                  <p>{item.reason}</p>
+            {appointments.filter(a => a.status === 'approved').length > 0 ? (
+              appointments.filter(a => a.status === 'approved').map((item, i) => (
+                <div key={item._id || i} className="schedule-item animate-fadeInUp" style={{ animationDelay: `${i * 0.08}s`, animationFillMode: 'both' }}>
+                  <span className="schedule-time">{item.timeSlot || item.time || 'N/A'}</span>
+                  <div className="schedule-patient">
+                    <h4>{item.patientName || item.patient?.name || 'Patient'}</h4>
+                    <p>{item.reason}</p>
+                  </div>
+                  <span className="badge badge-approved">Confirmed</span>
                 </div>
-                <span className="badge badge-approved">Confirmed</span>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p style={{ textAlign: 'center', opacity: 0.7 }}>No confirmed appointments for today.</p>
+            )}
           </div>
         </div>
 
