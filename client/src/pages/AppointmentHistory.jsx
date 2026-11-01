@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AppointmentCard from '../components/AppointmentCard';
+import DigitalPrescriptionModal from '../components/DigitalPrescriptionModal';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { getAppointments, updateAppointment } from '../services/api';
 import { toast } from 'react-toastify';
@@ -36,6 +37,7 @@ export default function AppointmentHistory() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [rxModalAppointment, setRxModalAppointment] = useState(null);
 
   useEffect(() => {
     fetchAppointments();
@@ -56,6 +58,11 @@ export default function AppointmentHistory() {
     : appointments.filter(a => a.status === activeTab);
 
   const handleAction = async (action, id, file = null) => {
+    if (action === 'write_prescription') {
+      setRxModalAppointment(file);
+      return;
+    }
+
     if (action === 'upload_prescription' && file) {
       const toastId = toast.loading('Uploading prescription...');
       try {
@@ -161,6 +168,13 @@ export default function AppointmentHistory() {
             </div>
           )}
         </div>
+        {rxModalAppointment && (
+          <DigitalPrescriptionModal
+            appointment={rxModalAppointment}
+            onClose={() => setRxModalAppointment(null)}
+            onSuccess={fetchAppointments}
+          />
+        )}
       </div>
     </div>
   );

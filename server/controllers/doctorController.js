@@ -143,6 +143,20 @@ const getAvailableSlots = async (req, res, next) => {
       });
     }
 
+    if (doctor.isAvailable === false) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          date,
+          day: '',
+          isOnLeave: true,
+          availableSlots: [],
+          bookedSlots: [],
+          message: 'Doctor is currently on leave',
+        },
+      });
+    }
+
     // Determine the day of the week for the requested date
     const requestedDate = new Date(date);
     const days = [
@@ -214,7 +228,7 @@ const getAvailableSlots = async (req, res, next) => {
         date,
         day: dayName,
         totalSlots: allSlots.length,
-        bookedSlots: bookedSlots.length,
+        bookedSlots,
         availableSlots,
       },
     });
@@ -256,6 +270,7 @@ const updateDoctorProfile = async (req, res, next) => {
       'availableSlots',
       'hospital',
       'bio',
+      'isAvailable',
     ];
 
     for (const field of allowedFields) {

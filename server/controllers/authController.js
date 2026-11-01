@@ -169,7 +169,7 @@ const login = async (req, res, next) => {
     // If the user is a doctor, include doctor profile id
     let doctorProfile = null;
     if (user.role === 'doctor') {
-      doctorProfile = await Doctor.findOne({ userId: user._id }).select('_id specialization');
+      doctorProfile = await Doctor.findOne({ userId: user._id }).select('_id specialization isAvailable');
     }
 
     res.status(200).json({
@@ -182,8 +182,9 @@ const login = async (req, res, next) => {
         role: user.role,
         phone: user.phone,
         profilePicture: user.profilePicture,
+        medicalHistory: user.medicalHistory,
         doctorProfile: doctorProfile
-          ? { _id: doctorProfile._id, specialization: doctorProfile.specialization }
+          ? { _id: doctorProfile._id, specialization: doctorProfile.specialization, isAvailable: doctorProfile.isAvailable }
           : null,
         token,
       },
@@ -223,6 +224,7 @@ const getProfile = async (req, res, next) => {
         role: user.role,
         phone: user.phone,
         profilePicture: user.profilePicture,
+        medicalHistory: user.medicalHistory,
         createdAt: user.createdAt,
         doctorProfile,
       },
@@ -249,11 +251,17 @@ const updateProfile = async (req, res, next) => {
     }
 
     // Update allowed fields
-    const { name, phone, profilePicture } = req.body;
+    const { name, phone, profilePicture, medicalHistory } = req.body;
 
     if (name !== undefined) user.name = name;
     if (phone !== undefined) user.phone = phone;
     if (profilePicture !== undefined) user.profilePicture = profilePicture;
+    if (medicalHistory !== undefined) {
+      user.medicalHistory = {
+        ...user.medicalHistory?.toObject?.() || user.medicalHistory || {},
+        ...medicalHistory,
+      };
+    }
 
     const updatedUser = await user.save();
 
@@ -267,6 +275,7 @@ const updateProfile = async (req, res, next) => {
         role: updatedUser.role,
         phone: updatedUser.phone,
         profilePicture: updatedUser.profilePicture,
+        medicalHistory: updatedUser.medicalHistory,
       },
     });
   } catch (error) {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
@@ -41,6 +41,7 @@ export const updateProfile = (data) => API.put('/auth/profile', data);
 // Doctors
 export const getDoctors = (params) => API.get('/doctors', { params });
 export const getDoctorById = (id) => API.get(`/doctors/${id}`);
+export const updateDoctorProfile = (id, data) => API.put(`/doctors/${id}`, data);
 
 // Slots
 export const getSlots = (doctorId, date) => API.get(`/doctors/${doctorId}/slots`, { params: { date } });
@@ -52,9 +53,10 @@ export const updateAppointment = (id, data) => API.patch(`/appointments/${id}`, 
 export const cancelAppointment = (id) => API.delete(`/appointments/${id}`);
 
 // Prescriptions
+export const generatePrescription = (data) => API.post('/prescriptions/generate', data);
 export const uploadPrescription = async (data) => {
   const token = localStorage.getItem('token');
-  const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:5000/api') + '/prescriptions', {
+  const res = await fetch((import.meta.env.VITE_API_URL || '/api') + '/prescriptions', {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: data

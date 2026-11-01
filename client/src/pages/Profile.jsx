@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { getProfile, updateProfile, updateDoctorProfile } from '../services/api';
 import { toast } from 'react-toastify';
 import {
   FiUser, FiMail, FiPhone, FiSave, FiShield,
-  FiEdit3, FiLock, FiCalendar, FiAward, FiMapPin, FiBriefcase, FiClock
+  FiEdit3, FiLock, FiCalendar, FiAward, FiMapPin, FiBriefcase, FiClock, FiHeart
 } from 'react-icons/fi';
 import './Profile.css';
 
@@ -19,14 +20,70 @@ export default function Profile() {
     email: user?.email || '',
   });
 
+  const [medicalHistory, setMedicalHistory] = useState({
+    bloodGroup: user?.medicalHistory?.bloodGroup || '',
+    allergies: user?.medicalHistory?.allergies || '',
+    chronicConditions: user?.medicalHistory?.chronicConditions || '',
+    currentMedications: user?.medicalHistory?.currentMedications || '',
+    bloodPressure: user?.medicalHistory?.bloodPressure || '',
+    weight: user?.medicalHistory?.weight || '',
+    emergencyContact: user?.medicalHistory?.emergencyContact || '',
+  });
+
+  const [editingMedical, setEditingMedical] = useState(false);
+
   const [doctorForm, setDoctorForm] = useState({
+    _id: user?.doctorProfile?._id || '',
     specialization: user?.specialization || 'Cardiology',
     experience: user?.experience || 5,
     qualification: user?.qualification || 'MBBS, MD',
     hospital: user?.hospital || 'City Hospital',
     bio: user?.bio || 'Dedicated healthcare professional committed to providing the best patient care.',
     consultationFee: user?.consultationFee || 500,
+    isAvailable: user?.doctorProfile?.isAvailable !== false,
   });
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const { data } = await getProfile();
+        const u = data?.data;
+        if (u) {
+          setForm({
+            name: u.name || '',
+            phone: u.phone || '',
+            email: u.email || '',
+          });
+          if (u.medicalHistory) {
+            setMedicalHistory({
+              bloodGroup: u.medicalHistory.bloodGroup || '',
+              allergies: u.medicalHistory.allergies || '',
+              chronicConditions: u.medicalHistory.chronicConditions || '',
+              currentMedications: u.medicalHistory.currentMedications || '',
+              bloodPressure: u.medicalHistory.bloodPressure || '',
+              weight: u.medicalHistory.weight || '',
+              emergencyContact: u.medicalHistory.emergencyContact || '',
+            });
+          }
+          if (u.doctorProfile) {
+            setDoctorForm({
+              _id: u.doctorProfile._id,
+              specialization: u.doctorProfile.specialization || 'Cardiology',
+              experience: u.doctorProfile.experience || 5,
+              qualification: u.doctorProfile.qualification || 'MBBS',
+              hospital: u.doctorProfile.hospital || '',
+              bio: u.doctorProfile.bio || '',
+              consultationFee: u.doctorProfile.consultationFee || 500,
+              isAvailable: u.doctorProfile.isAvailable !== false,
+            });
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+    loadProfile();
+  }, []);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -42,11 +99,14 @@ export default function Profile() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      updateUser({ ...user, ...form });
+      const { data } = await updateProfile({ ...form, medicalHistory });
+      if (user?.role === 'doctor' && doctorForm._id) {
+        await updateDoctorProfile(doctorForm._id, doctorForm);
+      }
+      updateUser({ ...user, ...(data?.data || form), medicalHistory });
       toast.success('Profile updated successfully!');
       setEditing(false);
+      setEditingMedical(false);
     } catch {
       toast.error('Failed to update profile');
     }
@@ -199,6 +259,127 @@ export default function Profile() {
                 </div>
               )}
             </div>
+
+            {/* Patient Medical History & Vitals */}
+            {user?.role === 'patient' && (
+              <div className="profile-section glass-card animate-fadeInUp" style={{ animationDelay: '0.18s' }}>
+                <div className="profile-section-header">
+                  <div className="profile-section-title-group">
+                    <FiHeart className="profile-section-icon" style={{ color: '#ef4444' }} />
+                    <h3 className="profile-section-title">Patient Medical History & Vitals</h3>
+                  </div>
+                  <button
+                    className={`btn ${editingMedical ? 'btn-ghost' : 'btn-outline'} btn-sm`}
+                    onClick={() => setEditingMedical(!editingMedical)}
+                  >
+                    <FiEdit3 size={14} />
+                    {editingMedical ? 'Cancel' : 'Update Vitals'}
+                  </button>
+                </div>
+
+                <div className="profile-form-grid">
+                  <div className="form-group">
+                    <label className="form-label">Blood Group</label>
+                    <select
+                      className="form-select"
+                      value={medicalHistory.bloodGroup}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, bloodGroup: e.target.value })}
+                      disabled={!editingMedical}
+                    >
+                      <option value="">Select Blood Group</option>
+                      {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Body Weight (kg)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g., 68 kg"
+                      value={medicalHistory.weight}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, weight: e.target.value })}
+                      disabled={!editingMedical}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Blood Pressure (mmHg)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g., 120/80 mmHg"
+                      value={medicalHistory.bloodPressure}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, bloodPressure: e.target.value })}
+                      disabled={!editingMedical}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Emergency Contact Number</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g., +91-9876543210"
+                      value={medicalHistory.emergencyContact}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, emergencyContact: e.target.value })}
+                      disabled={!editingMedical}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label">Known Allergies (Drug / Food / Environmental)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g., Penicillin, Peanuts, Dust (or None)"
+                      value={medicalHistory.allergies}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, allergies: e.target.value })}
+                      disabled={!editingMedical}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label">Past / Chronic Medical Conditions</label>
+                    <textarea
+                      className="form-textarea"
+                      rows={2}
+                      placeholder="e.g., Type 2 Diabetes, Mild Asthma, Past Appendectomy (2022)..."
+                      value={medicalHistory.chronicConditions}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, chronicConditions: e.target.value })}
+                      disabled={!editingMedical}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label">Current Regular Medications</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g., Metformin 500mg daily, Vitamin D3"
+                      value={medicalHistory.currentMedications}
+                      onChange={e => setMedicalHistory({ ...medicalHistory, currentMedications: e.target.value })}
+                      disabled={!editingMedical}
+                    />
+                  </div>
+                </div>
+
+                {editingMedical && (
+                  <div className="profile-form-actions">
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleSave}
+                      disabled={saving}
+                    >
+                      {saving ? <div className="spinner" /> : <FiSave size={16} />}
+                      {saving ? 'Saving Vitals...' : 'Save Medical History'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Doctor-specific fields */}
             {isDoctor && (

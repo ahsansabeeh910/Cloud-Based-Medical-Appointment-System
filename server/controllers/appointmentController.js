@@ -56,6 +56,13 @@ const createAppointment = async (req, res, next) => {
       });
     }
 
+    if (doctor.isAvailable === false) {
+      return res.status(400).json({
+        success: false,
+        message: 'This doctor is currently on leave. Please select an available specialist.',
+      });
+    }
+
     // Check if the time slot is already booked
     const startOfDay = new Date(date);
     startOfDay.setUTCHours(0, 0, 0, 0);
@@ -174,7 +181,7 @@ const getAppointments = async (req, res, next) => {
       })
       .populate({
         path: 'patientId',
-        select: 'name email phone profilePicture',
+        select: 'name email phone profilePicture medicalHistory',
       })
       .sort({ date: -1, createdAt: -1 })
       .skip(skip)

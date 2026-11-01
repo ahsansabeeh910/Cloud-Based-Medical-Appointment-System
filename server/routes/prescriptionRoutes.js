@@ -5,9 +5,17 @@ const {
   uploadPrescriptionValidation,
   getPrescriptionsByAppointment,
   downloadPrescription,
+  generateDigitalPrescription,
 } = require('../controllers/prescriptionController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const upload = require('../middleware/upload');
+
+/**
+ * @route   POST /api/prescriptions/generate
+ * @desc    Generate a digital prescription and upload to S3
+ * @access  Private (Doctor only)
+ */
+router.post('/generate', protect, authorize('doctor'), generateDigitalPrescription);
 
 /**
  * @route   POST /api/prescriptions

@@ -3,6 +3,8 @@ import './AppointmentCard.css';
 
 export default function AppointmentCard({ appointment, role = 'patient', onAction, index = 0 }) {
   const status = appointment.status || 'pending';
+  const medHist = appointment.patientId?.medicalHistory;
+  const hasMedHist = medHist && (medHist.bloodGroup || medHist.allergies || medHist.chronicConditions || medHist.bloodPressure || medHist.weight);
 
   const getInitials = (name) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
@@ -68,6 +70,31 @@ export default function AppointmentCard({ appointment, role = 'patient', onActio
         </div>
       )}
 
+      {role === 'doctor' && hasMedHist && (
+        <div
+          style={{
+            marginTop: '10px',
+            padding: '10px 12px',
+            borderRadius: '8px',
+            background: 'rgba(14, 165, 233, 0.08)',
+            border: '1px solid rgba(14, 165, 233, 0.2)',
+            fontSize: '0.8rem',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '10px',
+          }}
+        >
+          <span style={{ fontWeight: 600, color: 'var(--primary-light)', width: '100%' }}>
+            🩺 Patient Medical Summary:
+          </span>
+          {medHist.bloodGroup && <span><strong>Blood:</strong> {medHist.bloodGroup}</span>}
+          {medHist.weight && <span><strong>Weight:</strong> {medHist.weight}</span>}
+          {medHist.bloodPressure && <span><strong>BP:</strong> {medHist.bloodPressure}</span>}
+          {medHist.allergies && <span><strong>Allergies:</strong> {medHist.allergies}</span>}
+          {medHist.chronicConditions && <span><strong>Conditions:</strong> {medHist.chronicConditions}</span>}
+        </div>
+      )}
+
       {onAction && (
         <div className="appointment-card-actions">
           {role === 'doctor' && status === 'pending' && (
@@ -87,6 +114,12 @@ export default function AppointmentCard({ appointment, role = 'patient', onActio
           )}
           {role === 'doctor' && status === 'completed' && (
             <>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => onAction('write_prescription', appointment._id || appointment.id, appointment)}
+              >
+                ✍️ Write Digital Rx
+              </button>
               <input 
                 type="file" 
                 id={`upload-${appointment._id || appointment.id}`} 
@@ -102,7 +135,7 @@ export default function AppointmentCard({ appointment, role = 'patient', onActio
                 className="btn btn-outline btn-sm" 
                 onClick={() => document.getElementById(`upload-${appointment._id || appointment.id}`).click()}
               >
-                Upload Prescription
+                Upload File
               </button>
             </>
           )}

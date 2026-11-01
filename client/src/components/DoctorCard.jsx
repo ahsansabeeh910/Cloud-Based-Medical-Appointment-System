@@ -32,10 +32,16 @@ export default function DoctorCard({ doctor, index = 0 }) {
     'linear-gradient(135deg, #6366f1, #8b5cf6)',
   ];
 
+  const isAvailable = doctor.isAvailable !== false && doctor.available !== false;
+
   return (
     <div
       className="doctor-card glass-card glass-card-hover animate-fadeInUp"
-      style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'both' }}
+      style={{
+        animationDelay: `${index * 0.1}s`,
+        animationFillMode: 'both',
+        opacity: isAvailable ? 1 : 0.85,
+      }}
     >
       <div className="doctor-card-header">
         <div
@@ -43,10 +49,25 @@ export default function DoctorCard({ doctor, index = 0 }) {
           style={{ background: gradients[index % gradients.length] }}
         >
           {getInitials(doctor.name)}
-          {doctor.available !== false && <span className="availability-dot" />}
+          {isAvailable && <span className="availability-dot" />}
         </div>
         <div className="doctor-card-info">
-          <h3 className="doctor-card-name">{doctor.name}</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <h3 className="doctor-card-name" style={{ margin: 0 }}>{doctor.name}</h3>
+            <span
+              style={{
+                fontSize: '0.7rem',
+                padding: '2px 8px',
+                borderRadius: '999px',
+                fontWeight: 600,
+                background: isAvailable ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.18)',
+                color: isAvailable ? '#10b981' : '#f59e0b',
+                border: `1px solid ${isAvailable ? 'rgba(16, 185, 129, 0.35)' : 'rgba(245, 158, 11, 0.35)'}`,
+              }}
+            >
+              {isAvailable ? '● Available' : '● On Leave'}
+            </span>
+          </div>
           <p className="doctor-card-specialization">{doctor.specialization}</p>
           <div className="doctor-card-rating">
             {renderStars(doctor.rating || 0)}
@@ -76,10 +97,10 @@ export default function DoctorCard({ doctor, index = 0 }) {
           <span className="doctor-card-fee-amount">₹{doctor.fee || 500}</span>
         </div>
         <button
-          className="btn btn-primary"
+          className={`btn ${isAvailable ? 'btn-primary' : 'btn-outline'}`}
           onClick={() => navigate(`/doctors/${doctor._id || doctor.id}/book`)}
         >
-          Book Appointment
+          {isAvailable ? 'Book Appointment' : 'View Alternatives'}
         </button>
       </div>
     </div>

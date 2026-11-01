@@ -73,6 +73,16 @@ export default function DoctorSearch() {
     return matchesSearch && matchesSpec;
   });
 
+  const hasUnavailableInFilter = filtered.some(
+    (d) => d.isAvailable === false || d.available === false
+  );
+  const availableInFilter = filtered.filter(
+    (d) => d.isAvailable !== false && d.available !== false
+  );
+  const alternativeAvailableDoctors = doctors
+    .filter((d) => d.isAvailable !== false && d.available !== false)
+    .slice(0, 6);
+
   return (
     <div className="doctor-search-page page">
       <div className="container">
@@ -119,6 +129,32 @@ export default function DoctorSearch() {
             </div>
           )}
         </div>
+
+        {!loading && ((hasUnavailableInFilter && availableInFilter.length === 0) || filtered.length === 0) && alternativeAvailableDoctors.length > 0 && (
+          <div style={{ marginTop: '36px' }}>
+            <div
+              className="glass-card"
+              style={{
+                padding: '18px 24px',
+                marginBottom: '20px',
+                borderLeft: '4px solid #10b981',
+                background: 'rgba(16, 185, 129, 0.08)',
+              }}
+            >
+              <h3 style={{ margin: '0 0 6px 0', color: '#10b981' }}>
+                💡 Recommended Available Specialists You Can Book Right Now
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.85 }}>
+                The specialist you searched for is currently on leave or unavailable. Here are other verified doctors and specialists who are online and accepting appointments today:
+              </p>
+            </div>
+            <div className="doctors-grid">
+              {alternativeAvailableDoctors.map((doc, i) => (
+                <DoctorCard key={`alt-${doc._id || doc.id}`} doctor={doc} index={i} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

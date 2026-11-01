@@ -42,6 +42,19 @@ const prescriptionSchema = new mongoose.Schema(
       maxlength: [1000, 'Notes cannot exceed 1000 characters'],
       default: '',
     },
+    diagnosis: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    medicines: [
+      {
+        name: { type: String, default: '' },
+        dosage: { type: String, default: '' },
+        frequency: { type: String, default: '' },
+        duration: { type: String, default: '' },
+      },
+    ],
     uploadedAt: {
       type: Date,
       default: Date.now,

@@ -7,7 +7,8 @@ import {
 } from 'react-icons/fi';
 import StatsCard from '../components/StatsCard';
 import AppointmentCard from '../components/AppointmentCard';
-import { getAppointments } from '../services/api';
+import DigitalPrescriptionModal from '../components/DigitalPrescriptionModal';
+import { getAppointments, getProfile, updateDoctorProfile } from '../services/api';
 import { toast } from 'react-toastify';
 import './PatientDashboard.css';
 import './DoctorDashboard.css';
@@ -24,14 +25,59 @@ const SAMPLE_APPOINTMENTS = [
 
 
 export default function DoctorDashboard() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(user?.doctorProfile?.isAvailable !== false);
+  const [doctorProfileId, setDoctorProfileId] = useState(user?.doctorProfile?._id || null);
+  const [togglingStatus, setTogglingStatus] = useState(false);
+  const [rxModalAppointment, setRxModalAppointment] = useState(null);
 
   useEffect(() => {
     fetchAppointments();
+    fetchDoctorStatus();
   }, []);
+
+  const fetchDoctorStatus = async () => {
+    try {
+      const { data } = await getProfile();
+      const docProf = data?.data?.doctorProfile;
+      if (docProf) {
+        setDoctorProfileId(docProf._id);
+        setIsAvailable(docProf.isAvailable !== false);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleToggleAvailability = async () => {
+    if (!doctorProfileId) {
+      toast.error('Doctor profile not found');
+      return;
+    }
+    setTogglingStatus(true);
+    const nextState = !isAvailable;
+    try {
+      await updateDoctorProfile(doctorProfileId, { isAvailable: nextState });
+      setIsAvailable(nextState);
+      if (user?.doctorProfile) {
+        updateUser({
+          ...user,
+          doctorProfile: { ...user.doctorProfile, isAvailable: nextState },
+        });
+      }
+      toast.success(
+        nextState
+          ? '🟢 You are now Available for new patient bookings!'
+          : '🟠 Status set to On Leave / Busy. Patients will be suggested available specialists.'
+      );
+    } catch {
+      toast.error('Failed to update availability status');
+    }
+    setTogglingStatus(false);
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -48,6 +94,11 @@ export default function DoctorDashboard() {
   const totalPatients = new Set(appointments.map(a => a.patientName || a.patient?.name)).size;
 
   const handleAction = async (action, id, file = null) => {
+    if (action === 'write_prescription') {
+      setRxModalAppointment(file);
+      return;
+    }
+
     if (action === 'upload_prescription' && file) {
       const toastId = toast.loading('Uploading prescription...');
       try {
@@ -109,9 +160,39 @@ export default function DoctorDashboard() {
   return (
     <div className="dashboard-page page">
       <div className="container">
-        <div className="dashboard-welcome glass-card animate-fadeInUp">
-          <h1>Good morning, <span className="gradient-text-secondary">{user?.name || 'Doctor'}</span>! 🩺</h1>
-          <p>Here's your practice overview for today</p>
+        <div
+          className="dashboard-welcome glass-card animate-fadeInUp"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}
+        >
+          <div>
+            <h1>Good morning, <span className="gradient-text-secondary">{user?.name || 'Doctor'}</span>! 🩺</h1>
+            <p>Here's your practice overview for today</p>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              background: isAvailable ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)',
+              border: `1px solid ${isAvailable ? 'rgba(16, 185, 129, 0.35)' : 'rgba(245, 158, 11, 0.35)'}`,
+              padding: '10px 16px',
+              borderRadius: '12px',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '0.75rem', opacity: 0.75 }}>Practice Status</div>
+              <div style={{ fontWeight: 700, color: isAvailable ? '#10b981' : '#f59e0b' }}>
+                {isAvailable ? '🟢 Available for Bookings' : '🟠 On Leave / Busy'}
+              </div>
+            </div>
+            <button
+              className={`btn btn-sm ${isAvailable ? 'btn-outline' : 'btn-primary'}`}
+              onClick={handleToggleAvailability}
+              disabled={togglingStatus}
+            >
+              {togglingStatus ? 'Updating...' : isAvailable ? 'Set On Leave' : 'Set Available'}
+            </button>
+          </div>
         </div>
 
         <div className="dashboard-stats">
@@ -178,6 +259,13 @@ export default function DoctorDashboard() {
             </div>
           </div>
         </div>
+        {rxModalAppointment && (
+          <DigitalPrescriptionModal
+            appointment={rxModalAppointment}
+            onClose={() => setRxModalAppointment(null)}
+            onSuccess={fetchAppointments}
+          />
+        )}
       </div>
     </div>
   );

@@ -48,6 +48,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    medicalHistory: {
+      bloodGroup: { type: String, default: '' },
+      allergies: { type: String, default: '' },
+      chronicConditions: { type: String, default: '' },
+      currentMedications: { type: String, default: '' },
+      bloodPressure: { type: String, default: '' },
+      weight: { type: String, default: '' },
+      emergencyContact: { type: String, default: '' },
+    },
     createdAt: {
       type: Date,
       default: Date.now,

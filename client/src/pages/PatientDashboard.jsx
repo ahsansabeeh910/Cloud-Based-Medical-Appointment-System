@@ -132,8 +132,8 @@ export default function PatientDashboard() {
             </div>
             <div className="quick-action-card glass-card glass-card-hover" onClick={() => navigate('/profile')}>
               <div className="quick-action-icon" style={{ background: 'var(--gradient-purple)' }}><FiUser /></div>
-              <h4>My Profile</h4>
-              <p>Update your information</p>
+              <h4>Profile & Medical History</h4>
+              <p>Update vitals, allergies & info</p>
             </div>
           </div>
         </div>
